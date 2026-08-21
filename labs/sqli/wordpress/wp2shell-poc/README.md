@@ -15,11 +15,11 @@ supplied administrator credentials or by first exercising the SQLi-to-admin brid
 
 Searchlight Cyber's advisory lists these wp2shell RCE exposure ranges:
 
-| Version range | Status |
-| ------------- | ------ |
-| <= 6.8.5 | Not affected |
-| 6.9.0 – 6.9.4 | Affected |
-| 7.0.0 – 7.0.1 | Affected |
+| Version range | Status       |
+|---------------|--------------|
+| <= 6.8.5      | Not affected |
+| 6.9.0 – 6.9.4 | Affected     |
+| 7.0.0 – 7.0.1 | Affected     |
 
 ## How it works
 
@@ -145,21 +145,21 @@ administrator, that generated account is removed automatically after the shell s
 
 ## Options
 
-| Option              | Applies to | Description                                                           |
-| ------------------- | ---------- | -------------------------------------------------------------------- |
-| `--proxy URL`       | all        | Route traffic through an HTTP proxy (for example, Burp).             |
-| `--timeout N`       | all        | Request timeout in seconds.                                          |
-| `--sleep N`         | check      | Delay used by the timing fallback for `--confirm-sqli`.              |
-| `--samples N`       | check      | Timing pairs used by the timing fallback for `--confirm-sqli`.       |
-| `--confirm-sqli`    | check      | Also send an active SQLi confirmation payload.                       |
-| `--preset`          | read       | `fingerprint` or `users`.                                            |
-| `--technique`       | read       | `auto` (default), `union` (in-band, forges a fake post), `error` (in-band, needs visible DB errors), or `blind`. |
-| `--query`           | read       | A scalar SQL expression to read.                                     |
-| `--prefix`          | read       | Database table prefix (default `wp_`).                               |
-| `--max-length N`    | read       | Maximum characters read per value (default 128).                     |
-| `--user` / `--password` | shell  | Optional admin credentials; omit both to use the pre-auth bridge.   |
-| `--cmd`             | shell      | Command to run (omit when using `-i`).                              |
-| `-i` / `--interactive` | shell   | Open an interactive shell after deploying.                           |
+| Option                  | Applies to | Description                                                                                                      |
+|-------------------------|------------|------------------------------------------------------------------------------------------------------------------|
+| `--proxy URL`           | all        | Route traffic through an HTTP proxy (for example, Burp).                                                         |
+| `--timeout N`           | all        | Request timeout in seconds.                                                                                      |
+| `--sleep N`             | check      | Delay used by the timing fallback for `--confirm-sqli`.                                                          |
+| `--samples N`           | check      | Timing pairs used by the timing fallback for `--confirm-sqli`.                                                   |
+| `--confirm-sqli`        | check      | Also send an active SQLi confirmation payload.                                                                   |
+| `--preset`              | read       | `fingerprint` or `users`.                                                                                        |
+| `--technique`           | read       | `auto` (default), `union` (in-band, forges a fake post), `error` (in-band, needs visible DB errors), or `blind`. |
+| `--query`               | read       | A scalar SQL expression to read.                                                                                 |
+| `--prefix`              | read       | Database table prefix (default `wp_`).                                                                           |
+| `--max-length N`        | read       | Maximum characters read per value (default 128).                                                                 |
+| `--user` / `--password` | shell      | Optional admin credentials; omit both to use the pre-auth bridge.                                                |
+| `--cmd`                 | shell      | Command to run (omit when using `-i`).                                                                           |
+| `-i` / `--interactive`  | shell      | Open an interactive shell after deploying.                                                                       |
 
 ## Remediation
 
