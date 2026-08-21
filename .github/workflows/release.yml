@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Get tag version
+        id: meta
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Vullab ${{ env.VERSION }}
+          generate_release_notes: true
+          body: |
+            ## Vullab ${{ env.VERSION }}
+            > 📦 Vullab漏洞靶场版本发布
+            >
+            > 本地部署：下载源码包，解压执行
+            > ```bash
+            > chmod +x scripts/vullab.sh
+            > ./scripts/vullab.sh list
+            > ```
+          draft: false
+          prerelease: false

@@ -1,0 +1,76 @@
+name: 靶场问题反馈
+description: 提交靶场Bug、环境异常、复现问题
+title: "[FINDING] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: vuln_type
+    attributes:
+      label: 漏洞类型
+      options:
+        - cms
+        - xxe
+        - rce
+        - sqli
+        - fileupload
+        - others
+    validations:
+      required: true
+
+  - type: input
+    id: lab_name
+    attributes:
+      label: 靶场名称
+      description: 靶场文件夹名字，如 seacms / CVE‑2025‑66516
+    validations:
+      required: true
+
+  - type: input
+    id: lab_path
+    attributes:
+      label: 靶场完整路径
+      placeholder: labs/xxe/CVE‑2025‑66516
+    validations:
+      required: true
+
+  - type: dropdown
+    id: problem_type
+    attributes:
+      label: 问题类型
+      options:
+        - Docker构建失败 build error
+        - 容器启动异常 start failed
+        - 漏洞无法复现 cannot reproduce
+        - 端口冲突 port conflict
+        - 文档缺失 docs missing
+        - 其他问题 other
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 一步步说明如何触发该问题
+      placeholder: |
+        1. ./scripts/vullab.sh start xxx
+        2. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 报错日志/输出
+      description: 粘贴完整报错，尽量复制原始日志
+      render: shell
+
+  - type: checkboxes
+    id: check_list
+    attributes:
+      label: 自查确认
+      options:
+        - label: 确认已经搜索过现有Issue，无重复问题
+          required: true
+        - label: 确认本地Docker、Docker‑Compose环境正常
+          required: true

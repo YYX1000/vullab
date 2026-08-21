@@ -1,0 +1,50 @@
+name: Vullab CI Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lab-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install Docker Compose v2
+        run: |
+          sudo apt update
+          sudo apt install -y docker-compose-v2
+
+      - name: Validate & Build All Labs
+        run: |
+          set -e
+          find ./labs -name "docker-compose.yml" -type f -print0 | while IFS= read -r -d '' compose_path; do
+            lab_dir=$(dirname "${compose_path}")
+            lab_name=$(basename "${lab_dir}")
+            vuln_type=$(basename $(dirname "${lab_dir}"))
+
+            echo "=================================================="
+            echo "VulnType: [${vuln_type}] Lab: ${lab_name}"
+            echo "Path: ${lab_dir}"
+            echo "=================================================="
+
+            cd "${lab_dir}"
+
+            docker compose config
+            docker compose build
+
+            docker compose up -d --build
+            sleep 12
+            docker compose ps
+            docker compose logs --tail=50
+            docker compose down --remove-orphans --volumes
+
+            cd "${GITHUB_WORKSPACE}"
+          done
