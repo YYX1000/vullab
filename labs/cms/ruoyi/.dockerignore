@@ -1,0 +1,7 @@
+# 前端构建上下文为仓库根目录，排除不需要的文件
+backend/
+sql/
+.git/
+.env
+*.md
+docker-compose.yml
