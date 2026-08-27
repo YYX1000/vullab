@@ -1,0 +1,90 @@
+# ============================================================
+# RuoYi-Vue 官方原版（java17）编排
+#   mysql + redis + backend(SpringBoot3/JDK17) + frontend(nginx 托管前端并反代后端)
+#   对外仅暴露前端 nginx（WEB_PORT），后端/数据库/redis 仅内部组网
+# ============================================================
+
+services:
+  mysql:
+    image: ${MYSQL_IMAGE:-mysql:8.0.42}
+    container_name: ruoyi-vue17-mysql
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ry-vue}
+    volumes:
+      - mysql_data17:/var/lib/mysql
+      - ./sql/init-mysql.sql:/docker-entrypoint-initdb.d/init-mysql.sql:ro
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+      - --explicit_defaults_for_timestamp=true
+      - --lower_case_table_names=1
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  redis:
+    image: ${REDIS_IMAGE:-redis:7-alpine}
+    container_name: ruoyi-vue17-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build:
+      # build context 指向 ruoyi 根目录，以便复用 common/maven-settings.xml
+      context: ../..
+      dockerfile: ruoyi-original/java17/backend/Dockerfile
+      args:
+        RUOYI_REPO: ${RUOYI_REPO:-https://github.com/yangzongzhuan/RuoYi-Vue.git}
+        RUOYI_BRANCH: ${RUOYI_BRANCH:-springboot3}
+    image: ruoyi/ruoyi-vue17-server:${IMAGE_TAG:-3.9.2}
+    container_name: ruoyi-vue17-server
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      SERVER_PORT: 8080
+      # 数据源指向内部 mysql 服务名（druid 主库；datasource 位于 application-druid.yml，
+      # 属 profile 配置，优先级高于外部 application.yml，故用环境变量覆盖）
+      SPRING_DATASOURCE_DRUID_MASTER_URL: "jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-ry-vue}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8"
+      SPRING_DATASOURCE_DRUID_MASTER_USERNAME: root
+      SPRING_DATASOURCE_DRUID_MASTER_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    volumes:
+      # 后端主配置文件（已修正 Linux 文件路径与 redis 地址）
+      - ./config/application.yml:/ruoyi/server/config/application.yml:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        FRONTEND_REPO: ${FRONTEND_REPO:-https://github.com/yangzongzhuan/RuoYi-Vue2.git}
+        FRONTEND_BRANCH: ${FRONTEND_BRANCH:-master}
+    image: ruoyi/ruoyi-vue17-ui:${IMAGE_TAG:-3.9.2}
+    container_name: ruoyi-vue17-ui
+    restart: unless-stopped
+    volumes:
+      # 反向代理配置：静态资源 + /prod-api 转发到 backend
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "${WEB_PORT:-8081}:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data17:
