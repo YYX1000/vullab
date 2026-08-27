@@ -31,11 +31,5 @@ jobs:
           body: |
             ## Vullab ${{ env.VERSION }}
             > 📦 Vullab漏洞靶场版本发布
-            >
-            > 本地部署：下载源码包，解压执行
-            > ```bash
-            > chmod +x scripts/vullab.sh
-            > ./scripts/vullab.sh list
-            > ```
           draft: false
           prerelease: false

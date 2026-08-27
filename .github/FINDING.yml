@@ -53,7 +53,7 @@ body:
       label: 复现步骤
       description: 一步步说明如何触发该问题
       placeholder: |
-        1. ./scripts/vullab.sh start xxx
+        1. cd labs/<漏洞类型>/<靶场名> && docker compose up -d --build
         2. ...
     validations:
       required: true
