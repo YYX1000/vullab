@@ -7,9 +7,37 @@ on:
     branches: [ main ]
 
 jobs:
-  lab-validate:
+  discover:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate compose matrix
+        id: gen
+        run: |
+          matrix=$(find ./labs -name "docker-compose.yml" -type f | while IFS= read -r path; do
+            dir=$(dirname "${path}")
+            lab_name=$(basename "${dir}")
+            vuln_type=$(basename "$(dirname "${dir}")")
+            jq -n -c \
+              --arg dir "${dir}" \
+              --arg lab "${lab_name}" \
+              --arg vuln_type "${vuln_type}" \
+              '{dir: $dir, lab: $lab, vuln_type: $vuln_type}'
+          done | jq -s -c '.')
+          echo "matrix=${matrix}" >> "${GITHUB_OUTPUT}"
+
+  lab-validate:
+    needs: discover
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.discover.outputs.matrix) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,29 +50,21 @@ jobs:
           sudo apt update
           sudo apt install -y docker-compose-v2
 
-      - name: Validate & Build All Labs
+      - name: Validate & Build Lab
         run: |
           set -e
-          find ./labs -name "docker-compose.yml" -type f -print0 | while IFS= read -r -d '' compose_path; do
-            lab_dir=$(dirname "${compose_path}")
-            lab_name=$(basename "${lab_dir}")
-            vuln_type=$(basename $(dirname "${lab_dir}"))
+          echo "=================================================="
+          echo "VulnType: [${{ matrix.vuln_type }}] Lab: ${{ matrix.lab }}"
+          echo "Dir: ${{ matrix.dir }}"
+          echo "=================================================="
 
-            echo "=================================================="
-            echo "VulnType: [${vuln_type}] Lab: ${lab_name}"
-            echo "Path: ${lab_dir}"
-            echo "=================================================="
+          cd "${{ matrix.dir }}"
 
-            cd "${lab_dir}"
+          docker compose config
+          docker compose build
 
-            docker compose config
-            docker compose build
-
-            docker compose up -d --build
-            sleep 12
-            docker compose ps
-            docker compose logs --tail=50
-            docker compose down --remove-orphans --volumes
-
-            cd "${GITHUB_WORKSPACE}"
-          done
+          docker compose up -d --build
+          sleep 12
+          docker compose ps
+          docker compose logs --tail=50
+          docker compose down --remove-orphans --volumes
