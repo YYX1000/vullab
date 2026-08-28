@@ -7,7 +7,7 @@
 ## 架构
 
 ```
-mysql ── 内部（MySQL 5.7，数据卷持久化）
+mysql ── 内部（MySQL 5.7，数据存容器层）
 web   ── PHP7.4 + apache，构建时按 .env 注入的地址拉取完整安装包（解压取 */Upload/*）
 ```
 
@@ -36,5 +36,5 @@ docker compose up -d --build
 ```bash
 docker compose logs -f web      # 查看站点日志
 docker compose down             # 停止并移除容器
-docker compose down -v          # 停止并移除容器与数据卷（清空数据库）
+docker compose down          # 停止并移除容器（数据库数据随之清除）
 ```

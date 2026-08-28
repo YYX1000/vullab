@@ -9,7 +9,7 @@
 ## 架构
 
 ```
-mysql ── 内部（MySQL 5.6，数据卷持久化）
+mysql ── 内部（MySQL 5.6，数据存容器层）
 web   ── PHP5.6 + apache，构建时按 .env 注入的仓库地址拉取 6.x 源码树（仓库根即站点根）
 ```
 
@@ -39,12 +39,12 @@ SEACMS_REPO=https://github.com/V1ntLyn/seacms6.54.git   # v6.54（默认）
 SEACMS_REPO=https://github.com/MyPHPTools/seacms.git    # v6.58
 ```
 
-然后 `docker compose up -d --build` 重新构建；**跨版本切换建议先 `docker compose down -v` 清空数据卷**。
+然后 `docker compose up -d --build` 重新构建；**跨版本切换建议先 `docker compose down` 清空数据库**。
 
 ## 常用命令
 
 ```bash
 docker compose logs -f web      # 查看站点日志
 docker compose down             # 停止并移除容器
-docker compose down -v          # 停止并移除容器与数据卷（清空数据库）
+docker compose down          # 停止并移除容器（数据库数据随之清除）
 ```

@@ -75,7 +75,7 @@ cp .env.example .env
 docker compose up -d
 ```
 
-> ⚠️ 切换版本后建议 `docker compose down -v` 清空数据卷再启动，
+> ⚠️ 切换版本后建议 `docker compose down` 清空数据库再启动，
 > 避免旧版本数据库结构/站点状态残留影响新版本安装向导。
 
 ### 3. 快速启动
@@ -92,7 +92,7 @@ docker compose up -d
 ```bash
 docker compose logs -f          # 查看日志
 docker compose down             # 停止并移除容器
-docker compose down -v          # 停止并移除容器与数据卷（会清空数据库数据）
+docker compose down          # 停止并移除容器（数据库数据存于容器层，随之清除）
 ```
 
 ### 4. 访问与初始化

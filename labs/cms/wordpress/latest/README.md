@@ -16,7 +16,7 @@
 ## 架构
 
 ```
-mysql      ── 内部（MySQL 8.0，数据卷持久化）
+mysql      ── 内部（MySQL 8.0，数据存容器层）
 wordpress  ── Docker Hub 官方镜像 apache 变体（仅对外暴露 WEB_PORT）
 ```
 
@@ -45,12 +45,12 @@ WORDPRESS_IMAGE=wordpress:6.5.0-php8.2-apache   # 6.5 线
 WORDPRESS_IMAGE=wordpress:6.4.3-php8.2-apache   # 6.4 分支最终安全版本
 ```
 
-然后 `docker compose up -d` 重新启动；**跨版本切换建议先 `docker compose down -v` 清空数据卷**。
+然后 `docker compose up -d` 重新启动；**跨版本切换建议先 `docker compose down` 清空数据库**。
 
 ## 常用命令
 
 ```bash
 docker compose logs -f wordpress   # 查看站点日志
 docker compose down                # 停止并移除容器
-docker compose down -v             # 停止并移除容器与数据卷（清空数据库）
+docker compose down             # 停止并移除容器（数据库数据随之清除）
 ```

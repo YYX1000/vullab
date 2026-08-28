@@ -24,6 +24,8 @@
 ```
 vullab
 ├── README.md            # 项目总文档、靶场清单、使用说明、法律声明
+├── docs/                # 项目规范文档
+│   └── lab-spec.md      # 新增靶场 / CMS 环境规范
 ├── .github/             # CI 工作流（自动校验并构建全部靶场）
 └── labs/                # 靶场合集（按漏洞类型分类）
     ├── cms/             # CMS 漏洞环境
@@ -31,7 +33,7 @@ vullab
     │   ├── seacms/      #   SeaCMS 海洋 CMS 多版本环境（6.x / 10.x / 12.x / 13.x 时代）
     │   └── wordpress/   #   WordPress 多版本环境（4.x 时代 / 5.x 时代 / 当前主线）
     ├── sqli/            # SQL 注入
-    │   └── wordpress/   #   wp2shell（SQLi → RCE 全链路）
+    │   └── wp2shell/    #   wp2shell（SQLi → RCE 全链路，复用 cms/wordpress 官方镜像模式）
     ├── xxe/             # XXE 外部实体注入
     │   ├── CVE-2025-66516/   # Apache Tika XXE
     │   └── CVE-2025-68493/   # Apache Struts S2-069 XXE
@@ -49,7 +51,7 @@ vullab
 | CMS | [`labs/cms/ruoyi`](labs/cms/ruoyi) | RuoYi 多版本环境 | 官方 RuoYi-Vue / RuoYi-Vue-Plus / 芋道 Pro，多 JDK 版本 |
 | CMS | [`labs/cms/seacms`](labs/cms/seacms) | SeaCMS 多版本环境 | 按发展历程分代（v6x / v10x / v12x / v13x），`.env` 切换源码地址更换版本 |
 | CMS | [`labs/cms/wordpress`](labs/cms/wordpress) | WordPress 多版本环境 | 按发展历程分代（wp4x / wp5x / latest），`.env` 切换镜像 tag 更换版本 |
-| SQLi | [`labs/sqli/wordpress`](labs/sqli/wordpress) | CVE-2026-63030 & CVE-2026-60137 | WordPress SQLi → RCE 全链路（wp2shell） |
+| SQLi | [`labs/sqli/wp2shell`](labs/sqli/wp2shell) | CVE-2026-63030 & CVE-2026-60137 | WordPress SQLi → RCE 全链路（wp2shell），`.env` 切换受影响版本 |
 | XXE | [`labs/xxe/CVE-2025-66516`](labs/xxe/CVE-2025-66516) | XXE | Apache Tika 外部实体注入 |
 | XXE | [`labs/xxe/CVE-2025-68493`](labs/xxe/CVE-2025-68493) | XXE（S2-069） | Apache Struts 外部实体注入 |
 | 文件上传 | `labs/fileupload` | 规划中 | — |
