@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 -- RuoYi-Vue-Plus v5.6.2 初始化脚本 (ry_vue_5.X.sql + ry_job.sql)
 -- ----------------------------
 -- 第三方平台授权表

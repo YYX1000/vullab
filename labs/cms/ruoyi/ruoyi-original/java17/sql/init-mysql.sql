@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 -- ============================================================
 -- RuoYi-Vue springboot3（v3.9.2）数据库初始化脚本（合并 quartz + ry 主库）
 -- 由 MySQL 容器 /docker-entrypoint-initdb.d 自动导入

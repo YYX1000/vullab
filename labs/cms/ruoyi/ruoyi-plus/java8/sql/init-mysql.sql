@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 -- RuoYi-Vue-Plus v4.8.3 初始化脚本 (ry_vue_4.X.sql + tables_xxl_job.sql)
 -- ----------------------------
 -- 1、部门表
