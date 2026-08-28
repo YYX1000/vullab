@@ -1,0 +1,47 @@
+# ============================================================
+# WordPress 5.x 时代编排（PHP7.2 + MySQL5.7）
+#   mysql + wordpress（Docker Hub 官方镜像 apache 变体）
+#   对外仅暴露 WEB_PORT，数据库仅内部组网
+# ============================================================
+
+services:
+  mysql:
+    image: ${MYSQL_IMAGE:-mysql:5.7}
+    container_name: wp5x-mysql
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
+      MYSQL_USER: ${MYSQL_USER:-wordpress}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wordpress}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  wordpress:
+    image: ${WORDPRESS_IMAGE:-wordpress:5.0.3-php7.2-apache}
+    container_name: wp5x-web
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: ${MYSQL_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:-wordpress}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE:-wordpress}
+    ports:
+      - "${WEB_PORT:-8087}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

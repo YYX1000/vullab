@@ -28,7 +28,8 @@ vullab
 └── labs/                # 靶场合集（按漏洞类型分类）
     ├── cms/             # CMS 漏洞环境
     │   ├── ruoyi/       #   若依 RuoYi 多版本环境（官方 / Plus / 芋道 Pro）
-    │   └── seacms/      #   SeaCMS 海洋 CMS 环境
+    │   ├── seacms/      #   SeaCMS 海洋 CMS 环境
+    │   └── wordpress/   #   WordPress 多版本环境（4.x 时代 / 5.x 时代 / 当前主线）
     ├── sqli/            # SQL 注入
     │   └── wordpress/   #   wp2shell（SQLi → RCE 全链路）
     ├── xxe/             # XXE 外部实体注入
@@ -47,6 +48,7 @@ vullab
 |------|------|-------------|------|
 | CMS | [`labs/cms/ruoyi`](labs/cms/ruoyi) | RuoYi 多版本环境 | 官方 RuoYi-Vue / RuoYi-Vue-Plus / 芋道 Pro，多 JDK 版本 |
 | CMS | [`labs/cms/seacms`](labs/cms/seacms) | SeaCMS | 海洋 CMS 安装与漏洞环境 |
+| CMS | [`labs/cms/wordpress`](labs/cms/wordpress) | WordPress 多版本环境 | 按发展历程分代（wp4x / wp5x / latest），`.env` 切换镜像 tag 更换版本 |
 | SQLi | [`labs/sqli/wordpress`](labs/sqli/wordpress) | CVE-2026-63030 & CVE-2026-60137 | WordPress SQLi → RCE 全链路（wp2shell） |
 | XXE | [`labs/xxe/CVE-2025-66516`](labs/xxe/CVE-2025-66516) | XXE | Apache Tika 外部实体注入 |
 | XXE | [`labs/xxe/CVE-2025-68493`](labs/xxe/CVE-2025-68493) | XXE（S2-069） | Apache Struts 外部实体注入 |
