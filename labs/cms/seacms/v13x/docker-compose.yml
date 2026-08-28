@@ -1,0 +1,47 @@
+# ============================================================
+# SeaCMS 13.x 当前版本线编排（PHP7.4 + MySQL5.7）
+#   mysql + web(PHP7.4 apache，构建时拉取 13.x 官方完整安装包)
+#   对外仅暴露 WEB_PORT，数据库仅内部组网
+# ============================================================
+
+services:
+  mysql:
+    image: ${MYSQL_IMAGE:-mysql:5.7}
+    container_name: seacms-v13x-mysql
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123456}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-seacms_db}
+      MYSQL_USER: ${MYSQL_USER:-seacms}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-seacms123}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8
+      - --collation-server=utf8_general_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root123456}", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  web:
+    build:
+      context: ./php
+      args:
+        SEACMS_ZIP_URL: ${SEACMS_ZIP_URL:-https://www.seacms.net/download/%E5%AE%89%E8%A3%85%E5%8C%85/SeaCMS_V13.3_install.zip}
+    image: seacms/seacms-v13x:${IMAGE_TAG:-13.3}
+    container_name: seacms-v13x-web
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "${WEB_PORT:-8092}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

@@ -1,0 +1,47 @@
+# ============================================================
+# SeaCMS 6.x 时代编排（PHP5.6 + MySQL5.6）
+#   mysql + web(PHP5.6 apache，构建时拉取 6.x 源码树)
+#   对外仅暴露 WEB_PORT，数据库仅内部组网
+# ============================================================
+
+services:
+  mysql:
+    image: ${MYSQL_IMAGE:-mysql:5.6}
+    container_name: seacms-v6x-mysql
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123456}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-seacms_db}
+      MYSQL_USER: ${MYSQL_USER:-seacms}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-seacms123}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8
+      - --collation-server=utf8_general_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root123456}", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  web:
+    build:
+      context: ./php
+      args:
+        SEACMS_REPO: ${SEACMS_REPO:-https://github.com/V1ntLyn/seacms6.54.git}
+    image: seacms/seacms-v6x:${IMAGE_TAG:-6.54}
+    container_name: seacms-v6x-web
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "${WEB_PORT:-8089}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
